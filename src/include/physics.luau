@@ -1,0 +1,175 @@
+export type Entity = typeof(setmetatable({} :: {
+    tempVelocity: Vector3, --// 임시 속도 (temp v)
+    tempAcceleration: Vector3, --// 임시 가속도 (temp a)
+    
+    cframe: CFrame, --// Entitiy 의 CFrame
+
+    --// 플레그들 (앞의 f 는 flag 라는 뜻)
+    flags: { 
+        fRotate: boolean?, --// 회전을 하는지
+        fCollideAll: boolean?, --// 모든 충돌을 받는지
+        fCollideWorld: boolean?, --// World 충돌을 받는지
+        fGravity: boolean?, --// 중력의 영향을 받는지
+        fSlowGravity: boolean?, --// 느린 중력의 영향을 받는지 (fGravity 가 켜저있다면 적용돼지 않음)
+    },
+}, {}))
+
+local physics = {}
+physics.gravity = 169
+physics.entitys = {}
+
+function physics.entity(): Entity
+    physics.entitys[#physics.entitys + 1] = setmetatable({
+        tempVelocity = Vector3.zero,
+        tempAcceleration = Vector3.zero,
+    
+        cframe = CFrame.new(Vector3.zero),
+        
+        flags = {},
+    }, {})
+    
+    return physics.entitys[#physics.entitys]
+end
+
+function physics.traceLine(startPos: Vector3, endPos: Vector3): (number, RaycastResult?)
+	local startToEnd = endPos - startPos
+	return startToEnd.Magnitude, workspace:Raycast(startPos, startToEnd.Unit * startToEnd.Magnitude)
+end
+
+function physics.frame(self: Entity, deltaTime: number)
+    local gravity = physics.gravity * -deltaTime
+    local gravitySlow = gravity * 0.5
+    local traceFraction = 1
+
+
+    --// 나중에 raycast 쓸때 사용할 origin
+    local localOrigin = self.cframe.Position
+
+    --// v += a * dt
+    self.tempVelocity += self.tempAcceleration * deltaTime 
+    
+    --// cframe 에 속도 더해주고 각도설정
+    self.cframe = CFrame.new(localOrigin + self.tempVelocity * deltaTime) * CFrame.Angles(self.cframe:ToEulerAnglesXYZ())
+
+    --// 회전 제어
+    if self.flags.fRotate then
+        --// offset 은 (self.tempVelocity * deltaTime)[각속도] 의 라디안값 
+        local offset = self.tempVelocity * deltaTime * math.pi / 180
+        self.cframe *= CFrame.Angles(offset.X, offset.Y, offset.Z)
+    end
+
+    --// 충돌처리를 안한다면 리턴
+    if not (self.flags.fCollideAll or self.flags.fCollideWorld) then
+        return
+    end
+    
+    --// "
+    if not self.flags.fCollideWorld then
+        return        
+    end
+
+    --// trace (레이가 이동한 백터, raycast result)
+    local distance, result = physics.traceLine(localOrigin, self.cframe.Position)
+    
+    --// 만약 충돌하지 않았다면
+    if not result then
+        --// 기본 중력의 영향을 받는 상태라면
+        if self.flags.fGravity then
+            --// tempVelocity 의 y 에 중력만 더해줌
+            self.tempVelocity = Vector3.new(self.tempVelocity.X, self.tempVelocity.Y + gravity, self.tempVelocity.Z)
+        --// 느린 중력의 영향을 받는 상태라면
+        elseif self.flags.fSlowGravity then
+            --// tempVelocity 의 y 에 Slow 상태일때의 중력을 더해줌 (gravity * 0.5)
+            self.tempVelocity = Vector3.new(self.tempVelocity.X, self.tempVelocity.Y + gravitySlow, self.tempVelocity.Z)
+        end
+
+        --// 리턴
+        return
+    end
+
+    --// distance 는 실제 이동거리 result.Distance 는 충돌지점과의 거리
+    --// 만약 이 둘이 같을때 나누면 몫은 1, 즉 충돌하지 않았다는뜻 
+    traceFraction = result.Distance / distance
+    
+    --// 충돌하지 않았기에 리턴
+    if traceFraction == 1 then
+        return
+    end
+
+    --// 감쇠 계수 (기본값은 1)
+    local dampingFactor = 1
+    
+    --// 중력의 영향을 받는다면
+    if self.flags.fGravity or self.flags.fSlowGravity then
+        --// 감쇠 계수에 0.5 를 곱함
+        dampingFactor *= 0.5
+
+        --// Trace Normal 이 1 에 가까움 (바닥에 닿았다면)
+        if result.Normal.Y > 0.9 then
+            --// velocity y 가 0 이랑 같거나 작음 (밑으로 떨어지는중이거나 정지한 상태) 이고 낙하속도가 (-g * dt * 3) 보다 크다면
+            if self.tempVelocity.Y <= 0 and self.tempVelocity.Y >= gravity * 3 then
+                --// 감쇠 계수를 0 으로
+                dampingFactor = 0
+
+                --// 플레그 비활성화
+                self.flags.fRotate = false
+                self.flags.fSlowGravity = false
+                self.flags.fCollideWorld = false
+                
+                --// 엔티티를 착지 상태로
+                local _, y, _ = self.cframe:ToEulerAnglesYXZ()
+                self.cframe = CFrame.new(self.cframe.Position) * CFrame.Angles(0, y, 0)
+            end
+        end
+    end
+
+    --// 감쇠계수가 0 이 아니라면 (정지하지 않았다면)
+    if dampingFactor ~= 0 then
+        --// tempVelocity 와 Normal 의 내적 
+        --// (d = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z)
+        --// A * B = |A||B|cos(S)
+        --// A * B > 0 -> 비슷한 방향
+        --// A * B == 0 -> 서로 수직 
+        --// A * B < 0 -> 반대 방향
+
+        --// 예시
+        --// a = (1, 0, 0), b = (2, 0, 0) -> (2 * 1 + 0 + 0 = 2) > 0 --> 비슷한 방향
+        --// a = (0, 1, 0), b = (1, 0, 0) -> (0 * 1 + 1 * 0 + 0 = 0) == 0 --> 서로 수직
+        --// a = (1, 0, 0), b = (-1, 0, 0) -> (1 * -1 + 0 + 0 = -1) < 0 --> 반대 방향
+
+        --// 법선 백터 (Normal Vector) 는 표면에서 수직인 백터임
+        --// 이 법선 백터와 tempVelocity 를 Dot 함
+        --// 만약 이 프로덕트 값이 크다면 법선백터와 Velocity 의 방향이 비슷함 
+        --// -> 즉 더 강하게 부딪침 (즉 강도)
+
+        local productVelocity = self.tempVelocity:Dot(result.Normal)
+
+        --// 백터 반사공식
+        --// von = (-v * n) * n
+        --// r(반사백터) = v + 2 * (-v * n) * n = v - 2 * (v * n) * n
+        --// 마지막에 n 곱하는건 스칼라를 백터로 바꾸기 위한거니깐 건너뜀
+        self.tempVelocity += -2 * productVelocity * result.Normal
+
+        --// y 를 역백터
+        local x, y, z = self.cframe:ToEulerAnglesXYZ()
+        self.cframe = CFrame.new(self.cframe.Position) * CFrame.Angles(x, -y, z)
+    end
+
+    --// 감쇠계수가 1 이 아니라면 (중력의 영향을 받는다면)
+    if dampingFactor ~= 1 then
+        --// tempVelocity 에 감쇠계수를 곱함
+        self.tempVelocity *= dampingFactor
+
+        --// 모든 각도를 0.9 씩 곱해줌
+        local x, y, z = self.cframe:ToEulerAnglesXYZ()
+		self.cframe = CFrame.new(self.cframe.Position) * CFrame.Angles(x * 0.9, y * 0.9, z * 0.9)
+    end
+end
+
+function physics.update(deltaTime: number)
+    for _, v in physics.entitys do
+        physics.frame(v, deltaTime)
+    end
+end
+
+return physics
