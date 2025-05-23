@@ -1,10 +1,14 @@
 local physics = require('./physics')
 
-local part = workspace:WaitForChild('Part')
+local part = Instance.new('Part')
+part.Anchored = true
+part.Position = Vector3.zero
+part.Size = Vector3.one
+
 local en = physics.entity()
 
 en.cframe = CFrame.new(0, 6, 0) * CFrame.Angles(90, 90, 90)
-en.tempVelocity = Vector3.new(100, 50, 40)
+en.velocity = Vector3.new(100, 50, 40)
 en.flags.fGravity = true
 en.flags.fCollideWorld = true
 
