@@ -7,7 +7,7 @@ function physics_main_utils.clipVelocity(velocity: Vector3, normal: Vector3, ove
     --// 즉 부딪친 강도에 overbounce 를 곱한값 (backoff 는 스칼라)
     local backoff = velocity:Dot(normal) * overbounce
 
-    --// result 를 속도 - 법선백터 * 부딪친 가중치
+    --// result 를 속도 - 법선백터 * 부딪친 가중치 (백터 반사공식)
     --// 백터 반사공식(physics.luau 참고) v - 2 * (v * n) << 여기서 상수 2 = overbounce 
     --// 즉 overbounce 가 2 라면 완벽하게 튕김 (v - overbounce * (v (스칼라) * n (법선백터)))
     local result = velocity - normal * backoff
