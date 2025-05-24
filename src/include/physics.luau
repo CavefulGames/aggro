@@ -1,4 +1,5 @@
 export type Entity = typeof(setmetatable({} :: {
+    angularVelocity: Vector3,
     velocity: Vector3, --// 속도 (v)
     acceleration: Vector3, --// 가속도 (a)
     
@@ -11,6 +12,9 @@ export type Entity = typeof(setmetatable({} :: {
         fGravity: boolean?, --// 중력의 영향을 받는지
         fSlowGravity: boolean?, --// 느린 중력의 영향을 받는지 (fGravity 가 켜저있다면 적용돼지 않음)
     },
+
+    --// 레이케스트 법선백터
+    normal: Vector3,
 }, {}))
 
 local physics = {}
@@ -19,12 +23,15 @@ physics.entitys = {}
 
 function physics.entity(): Entity
     physics.entitys[#physics.entitys + 1] = setmetatable({
+        angularVelocity = Vector3.zero,
         velocity = Vector3.zero,
         acceleration = Vector3.zero,
     
         cframe = CFrame.new(Vector3.zero),
         
         flags = {},
+
+        normal = Vector3.zero,
     }, {})
     
     return physics.entitys[#physics.entitys]
@@ -36,10 +43,11 @@ function physics.traceLine(startPos: Vector3, endPos: Vector3): (number, Raycast
 end
 
 function physics.frame(self: Entity, deltaTime: number)
+    --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
     local gravity = physics.gravity * -deltaTime
-    local gravitySlow = gravity * 0.5
-    local traceFraction = 1
 
+    --// flag 중에 느린 중력이 켜져있을때 적용시킬 중력
+    local gravitySlow = gravity * 0.5
 
     --// 나중에 raycast 쓸때 사용할 origin
     local localOrigin = self.cframe.Position
@@ -50,13 +58,16 @@ function physics.frame(self: Entity, deltaTime: number)
     --// cframe 에 속도 더해주고 각도설정
     self.cframe = CFrame.new(localOrigin + self.velocity * deltaTime) * CFrame.Angles(self.cframe:ToEulerAnglesXYZ())
 
-    --// 회전 제어
+    --// 속도로 회전 제어
     if self.flags.fRotate then
-        --// offset 은 (self.velocity * deltaTime)[각속도] 의 라디안값 
-        local offset = self.velocity * deltaTime * math.pi / 180
-        self.cframe *= CFrame.Angles(offset.X, offset.Y, offset.Z)
+        --// 엥귤러 벨로시티를 velocity * dt 로 변경 
+        self.angularVelocity = self.velocity * deltaTime
     end
-    
+
+    --// 회전 적용 (라디안)
+    local angularVelocity = self.angularVelocity * math.pi / 180
+    self.cframe *= CFrame.Angles(angularVelocity.X, angularVelocity.Y, angularVelocity.Z)
+
     --// 충돌처리를 안한다면 리턴
     if not self.flags.fCollideWorld then
         return        
@@ -81,12 +92,13 @@ function physics.frame(self: Entity, deltaTime: number)
         return
     end
 
+    --// 다른곳에서도 trace 로 사용하여야 하기 때문에 따로 self 에 넣어줌
+    self.normal = result.Normal
+
     --// distance 는 실제 이동거리 result.Distance 는 충돌지점과의 거리
     --// 만약 이 둘이 같을때 나누면 몫은 1, 즉 충돌하지 않았다는뜻 
-    traceFraction = result.Distance / distance
-    
     --// 충돌하지 않았기에 리턴
-    if traceFraction == 1 then
+    if result.Distance / distance == 1 then
         return
     end
 
@@ -141,7 +153,7 @@ function physics.frame(self: Entity, deltaTime: number)
         --// 백터 반사공식
         --// von = (-v * n) * n
         --// r(반사백터) = v + 2 * (-v * n) * n = v - 2 * (v * n) * n
-        --// 마지막에 n 곱하는건 스칼라를 백터로 바꾸기 위한거니깐 건너뜀
+        --// 마지막에 n 곱하는건 스칼라를 백터로 바꾸기 위한거니깐 건너뜀 (productVelocity 는 스칼라)
         self.velocity += -2 * productVelocity * result.Normal
 
         --// y 를 역백터
