@@ -60,6 +60,7 @@ function grenade.collisionPhysics(self: Grenade)
             self.angularVelocity = Vector3.zero
         --// velocity 값이 30 이상이라면
         else
+            --// 수류탄 velocity 를 반사백터로 변경
             self.grenadeVelocity = velocity
         end
     end
