@@ -14,15 +14,15 @@ function physics_main_utils.clipVelocity(velocity: Vector3, normal: Vector3, ove
 
     --// 속도가 0.1 이네라면 0 으로 (정지상태) 
     if result.X > -0.1 and result.X < 0.1 then
-        result.X = 0
+        result = Vector3.new(0, result.Y, result.Z)
     end
 
     if result.Y > -0.1 and result.Y < 0.1 then
-        result.Y = 0
+        result = Vector3.new(result.X, 0, result.Z)
     end
 
     if result.Z > -0.1 and result.Z < 0.1 then
-        result.Z = 0
+        result = Vector3.new(result.X, result.Y, 0)
     end
 
     return result

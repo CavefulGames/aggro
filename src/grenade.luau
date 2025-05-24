@@ -1,5 +1,6 @@
 local physics = require('./include/physics')
 local physics_main_utils = require('./include/physics_main_utils')
+local math_main_utils = require('./include/math_main_utils')
 
 export type Grenade = physics.Entity & typeof(setmetatable({} :: {
     --// 충돌시 탄성계수
@@ -11,12 +12,12 @@ local grenade = {}
 function grenade.grenade(): Grenade
     local entitiy = physics.entity() :: Grenade
 
-    entitiy.elasticity = 1
+    entitiy.elasticity = 0.5
     
     return entitiy
 end
 
-function grenade.physics(self: Grenade)
+function grenade.collisionPhysics(self: Grenade)
     --// 탄성계수 clamp (0, 0.9)
     local totalElasticity = math.clamp(self.elasticity, 0, 0.9)
 
@@ -34,14 +35,38 @@ function grenade.physics(self: Grenade)
 
         --// velocity 값이 30보다 작다면
         if speedSquare < (30 * 30) then
-            --// 속도와 각도 초기화
+            --// 속도와 초기화
+            self.velocity = Vector3.zero
+            
+            --// normal 각도 구하기
+            local angle = math_main_utils.vectorAngle(self.normal)
+
+            --// angle 의 x 를 랜덤으로 (yaw 값 (지면기준))
+            angle = Vector3.new(angle.X, angle.Y, math.random(1, 360))
+
+            --// 반사각도로 각속도 주기
+            self.angularVelocity = angle
+        end
+
+    else
+        --// 충돌 각도가 0.7 이하이고
+        --// velocity 값이 30보다 작다면
+        if speedSquare < (30 * 30) then
+            --// 각속도, 속도 초기화
             self.velocity = Vector3.zero
             self.angularVelocity = Vector3.zero
-
-            
+        --// velocity 값이 30 이상이라면
+        else
+            self.velocity = velocity
         end
     end
+end
 
+function grenade.frame(self: Grenade, deltaTime: number)
+    physics.frame(self, deltaTime)
+    if self.isCollision then
+        grenade.collisionPhysics(self)
+    end
 end
 
 return grenade

@@ -15,6 +15,9 @@ export type Entity = typeof(setmetatable({} :: {
 
     --// 레이케스트 법선백터
     normal: Vector3,
+
+    --// 현제 충돌중인지
+    isCollision: boolean,
 }, {}))
 
 local physics = {}
@@ -32,6 +35,8 @@ function physics.entity(): Entity
         flags = {},
 
         normal = Vector3.zero,
+
+        isCollision = false,
     }, {})
     
     return physics.entitys[#physics.entitys]
@@ -51,6 +56,9 @@ function physics.frame(self: Entity, deltaTime: number)
 
     --// 나중에 raycast 쓸때 사용할 origin
     local localOrigin = self.cframe.Position
+
+    --// 충돌하지 않았음으로 변경
+    self.isCollision = false
 
     --// v += a * dt
     self.velocity += self.acceleration * deltaTime 
@@ -101,6 +109,9 @@ function physics.frame(self: Entity, deltaTime: number)
     if result.Distance / distance == 1 then
         return
     end
+
+    --// 충돌중임을 나타냄
+    self.isCollision = true
 
     --// 감쇠 계수 (기본값은 1)
     local dampingFactor = 1
