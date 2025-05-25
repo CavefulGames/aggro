@@ -5,9 +5,6 @@ local math_main_utils = require('./include/math_main_utils')
 export type Grenade = physics.Entity & typeof(setmetatable({} :: {
     --// 충돌시 탄성계수
     elasticity: number,
-
-    --// 수류탄에서만 사용하는 velocity
-    grenadeVelocity: Vector3,
 }, {}))
 
 local grenade = {}
@@ -34,12 +31,12 @@ function grenade.collisionPhysics(self: Grenade)
     --// 바닥충돌처리 (y 가 위쪽)
     if self.normal.Y > 0.7 then
         --// 충돌 각도가 0.7 을 넘는다면 (바닥이라면) velocity 적용
-        self.grenadeVelocity = velocity
+        self.velocity = velocity
 
         --// velocity 값이 30보다 작다면
         if speedSquare < (30 * 30) then
             --// 속도와 초기화
-            self.grenadeVelocity = Vector3.zero
+            self.velocity = Vector3.zero
             
             --// normal 각도 구하기
             local angle = math_main_utils.vectorAngle(self.normal)
@@ -56,16 +53,17 @@ function grenade.collisionPhysics(self: Grenade)
         --// velocity 값이 30보다 작다면
         if speedSquare < (30 * 30) then
             --// 각속도, 속도 초기화
-            self.grenadeVelocity = Vector3.zero
+            self.velocity = Vector3.zero
             self.angularVelocity = Vector3.zero
+            
         --// velocity 값이 30 이상이라면
         else
             --// 수류탄 velocity 를 반사백터로 변경
-            self.grenadeVelocity = velocity
+            self.velocity = velocity
         end
     end
 
-    self.velocity += self.grenadeVelocity
+    self.velocity += self.velocity
 end
 
 function grenade.frame(self: Grenade, deltaTime: number)
