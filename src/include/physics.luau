@@ -76,12 +76,7 @@ function physics.frame(self: Entity, deltaTime: number)
     local angularVelocity = self.angularVelocity * math.pi / 180
     self.cframe *= CFrame.Angles(angularVelocity.X, angularVelocity.Y, angularVelocity.Z)
 
-    --// 충돌처리를 안한다면 리턴
-    if not self.flags.fCollideWorld then
-        return        
-    end
-
-    --// trace (레이가 이동한 백터, raycast result)
+    --// trace (레이가 이동한 거리, raycast result)
     local distance, result = physics.traceLine(localOrigin, self.cframe.Position)
     
     --// 만약 충돌하지 않았다면
@@ -98,6 +93,11 @@ function physics.frame(self: Entity, deltaTime: number)
 
         --// 리턴
         return
+    end
+
+    --// 충돌처리를 안한다면 리턴
+    if not self.flags.fCollideWorld then
+        return        
     end
 
     --// 다른곳에서도 trace 로 사용하여야 하기 때문에 따로 self 에 넣어줌
