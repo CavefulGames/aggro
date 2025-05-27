@@ -15,6 +15,9 @@ export type Entity = typeof(setmetatable({} :: {
 
     --// 레이케스트 법선백터
     normal: Vector3,
+
+    --// 충돌여부
+    isCollision: boolean,
 }, {}))
 
 local physics = {}
@@ -53,6 +56,9 @@ function physics.frame(self: Entity, deltaTime: number)
 
     --// 나중에 raycast 쓸때 사용할 origin
     local localOrigin = self.cframe.Position
+
+    --// 충돌 비활성화
+    self.isCollision = false
 
     --// v += a * dt
     self.velocity += self.acceleration * deltaTime 
@@ -107,6 +113,9 @@ function physics.frame(self: Entity, deltaTime: number)
     --// 감쇠 계수 (기본값은 1)
     local dampingFactor = 1
     
+    --// 충돌 활성화
+    self.isCollision = true
+
     --// 중력의 영향을 받는다면
     if self.flags.fGravity or self.flags.fSlowGravity then
         --// 감쇠 계수에 0.5 를 곱함
