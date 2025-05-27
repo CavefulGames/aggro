@@ -1,45 +1,12 @@
-export type Entity = typeof(setmetatable({} :: {
-    angularVelocity: Vector3,
-    velocity: Vector3, --// 속도 (v)
-    acceleration: Vector3, --// 가속도 (a)
-    
-    cframe: CFrame, --// Entitiy 의 CFrame
+local physics = require('./physics')
+local world = require('./world')
 
-    --// 플레그들 (앞의 f 는 flag 라는 뜻)
-    flags: {
-        fRotate: boolean?, --// 회전을 하는지
-        fCollideWorld: boolean?, --// World 충돌을 받는지
-        fGravity: boolean?, --// 중력의 영향을 받는지
-        fSlowGravity: boolean?, --// 느린 중력의 영향을 받는지 (fGravity 가 켜저있다면 적용돼지 않음)
-    },
-
-    --// 레이케스트 법선백터
-    normal: Vector3,
-
-    --// 충돌여부
-    isCollision: boolean,
-}, {}))
+export type Entity = physics.Entity
 
 local tempentity = {}
-tempentity.gravity = 169
-tempentity.entitys = {}
 
 function tempentity.entity(): Entity
-    tempentity.entitys[#tempentity.entitys + 1] = setmetatable({
-        angularVelocity = Vector3.zero,
-        velocity = Vector3.zero,
-        acceleration = Vector3.zero,
-    
-        cframe = CFrame.new(Vector3.zero),
-        
-        flags = {},
-
-        normal = Vector3.zero,
-
-        isCollision = false,
-    }, {})
-    
-    return tempentity.entitys[#tempentity.entitys]
+    return physics.entity()
 end
 
 function tempentity.traceLine(startPos: Vector3, endPos: Vector3): (number, RaycastResult?)
@@ -49,7 +16,7 @@ end
 
 function tempentity.frame(self: Entity, deltaTime: number)
     --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
-    local gravity = tempentity.gravity * -deltaTime
+    local gravity = world.gravity * -deltaTime
 
     --// flag 중에 느린 중력이 켜져있을때 적용시킬 중력
     local gravitySlow = gravity * 0.5
@@ -180,12 +147,6 @@ function tempentity.frame(self: Entity, deltaTime: number)
         --// 모든 각도를 0.9 씩 곱해줌
         local x, y, z = self.cframe:ToEulerAnglesXYZ()
 		self.cframe = CFrame.new(self.cframe.Position) * CFrame.Angles(x * 0.9, y * 0.9, z * 0.9)
-    end
-end
-
-function tempentity.update(deltaTime: number)
-    for _, v in tempentity.entitys do
-        tempentity.frame(v, deltaTime)
     end
 end
 
