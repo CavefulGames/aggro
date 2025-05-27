@@ -41,13 +41,22 @@ function physics.entity(): Entity
 end
 
 function physics.physicsGravity(self: Entity, deltaTime: number): Vector3
+    --// 현제 엔티티의 속도
     local velocity = self.velocity
+
+    --// 중력을 적용한 y 속도 (현제 y - 중력 * dt)
+    --// 등가속도 운동의 기본공식 (속도) v = v0 + at
+    --// 중력은 아래로 작용하기에 중력가속도(a)를 빼줌
+    --// 즉 현제 속도 (v0) - 중력가속도 (a) * deltaTime (t)
     local newYVelocity = velocity.Y - world.gravity * deltaTime
 
+    --// 현제속도에 중력을 적용
     velocity = Vector3.new(velocity.X, newYVelocity, velocity.Z)
 
+    --// 현제속도에 중력을 적용
     self.velocity = velocity
 
+    --// 이동한 거리를 반환
     return Vector3.new(velocity.X * deltaTime, ((velocity.Y + newYVelocity) / 2) * deltaTime, self.cframe.Z + velocity.Z * deltaTime)
 end
 
