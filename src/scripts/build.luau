@@ -3,8 +3,14 @@ local fs = require('@lune/fs')
 local function build_source()
     local include = fs.readDir('src/include')
     local tests = fs.readDir('src/tests')
-    local output = [[
+    local output = [[     
+if game:GetService('ServerScriptService'):FindFirstChild('aggrobuild') then
+    game:GetService('ServerScriptService'):WaitForChild('aggrobuild'):Destroy()
+end
+
 local core_script = Instance.new('Script', game:GetService('ServerScriptService'))
+core_script.Name = 'aggrobuild'
+
 local include = Instance.new('Folder', core_script)
 include.Name = 'include'
 local tests = Instance.new('Folder', core_script)

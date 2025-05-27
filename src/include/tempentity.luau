@@ -98,6 +98,7 @@ function tempentity.frame(self: Entity, deltaTime: number)
                 --// 플레그 비활성화
                 self.flags.fRotate = false
                 self.flags.fSlowGravity = false
+                self.flags.fGravity = false
                 self.flags.fCollideWorld = false
                 
                 --// 엔티티를 착지 상태로
