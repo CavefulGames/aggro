@@ -18,7 +18,7 @@ function grenade.grenade(): Grenade
 end
 
 function grenade.frame(self: Grenade, deltaTime: number)
-        --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
+    --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
     local gravity = physics.gravity * -deltaTime
 
     --// flag 중에 느린 중력이 켜져있을때 적용시킬 중력
@@ -26,9 +26,6 @@ function grenade.frame(self: Grenade, deltaTime: number)
 
     --// 나중에 raycast 쓸때 사용할 origin
     local localOrigin = self.cframe.Position
-
-    --// 충돌하지 않았음으로 변경
-    self.isCollision = false
 
     --// v += a * dt
     self.velocity += self.acceleration * deltaTime 
@@ -79,12 +76,6 @@ function grenade.frame(self: Grenade, deltaTime: number)
     if result.Distance / distance == 1 then
         return
     end
-
-    --// 충돌중임을 나타냄
-    -- self.isCollision = true
-
-    -- --// 감쇠 계수 (기본값은 1)
-    -- local dampingFactor = 1
     
     -- --// 중력의 영향을 받는다면
     if self.flags.fGravity or self.flags.fSlowGravity then
