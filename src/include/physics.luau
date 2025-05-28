@@ -54,8 +54,18 @@ function physics.frame(self: Entity, deltaTime: number)
     --// gravity 를 적용한후 위치
     local currentPosition = originPosition + physics.physicsGravity(self, deltaTime)
     
-    --// self 의 cframe 에 반영
-    self.cframe = CFrame.new(currentPosition.X, currentPosition.Y, currentPosition.Z)
+    local angularVelocity = self.angularVelocity * 180 / math.pi
+
+    --// self 의 cframe 에 중력, 회전 적용
+    self.cframe = CFrame.new(
+        currentPosition.X, 
+        currentPosition.Y, 
+        currentPosition.Z
+    ) * CFrame.Angles(
+        angularVelocity.X, 
+        angularVelocity.Y, 
+        angularVelocity.Z
+    )
 
     --// 충돌처리등..
     physics.physicsTrace(self, originPosition, currentPosition)
