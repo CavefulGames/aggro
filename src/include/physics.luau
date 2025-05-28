@@ -1,7 +1,7 @@
 local world = require('./world')
 
 export type Entity = typeof(setmetatable({} :: {
-    angularVelocity: Vector3,
+    angularVelocity: Vector3 , --// 회전 (deg)
     velocity: Vector3, --// 속도 (v)
     acceleration: Vector3, --// 가속도 (a)
     
@@ -54,6 +54,7 @@ function physics.frame(self: Entity, deltaTime: number)
     --// gravity 를 적용한후 위치
     local currentPosition = originPosition + physics.physicsGravity(self, deltaTime)
     
+    --// 라디안 각도로 엥귤러 벨로시티를 만듬
     local angularVelocity = self.angularVelocity * 180 / math.pi
 
     --// self 의 cframe 에 중력, 회전 적용
