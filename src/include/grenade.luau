@@ -19,12 +19,22 @@ end
 
 function grenade.frame(self: Grenade, deltaTime: number)
     --// 일반물리 적용하기
-    physics.physicsGravity(self, deltaTime)
+    physics.frame(self, deltaTime)
 
-    --// 충돌했을때만 실행하게
+    --// 수류탄이 현제 충돌 상태가 아니라면 반환
     if not self.isCollision then
-		return
-	end
+        return
+    end
+
+    --// 수류탄 충돌 실행
+    grenade.grenadeCollision(self, deltaTime)
+end
+
+function grenade.grenadeCollision(self: Grenade, deltaTime: number)
+    --// 수류탄이 충돌하지 않는다면 반환
+    if not self.flags.fCollideWorld then
+        return
+    end
 
     --// 탄성계수 clamp (0, 0.9)
     local totalElasticity = math.clamp(self.elasticity, 0, 0.9)
@@ -54,6 +64,12 @@ function grenade.frame(self: Grenade, deltaTime: number)
 
             --// 반사각도로 각속도 주기
             self.angularVelocity = angle
+
+            --// 플레그 비활성화
+            self.flags.fRotate = false
+            self.flags.fSlowGravity = false
+            self.flags.fGravity = false
+            self.flags.fCollideWorld = false
         end
 
     --// 바닥에 충돌한게 아니라면

@@ -9,11 +9,6 @@ function tempentity.entity(): Entity
     return physics.entity()
 end
 
-function tempentity.traceLine(startPos: Vector3, endPos: Vector3): (number, RaycastResult?)
-	local startToEnd = endPos - startPos
-	return startToEnd.Magnitude, workspace:Raycast(startPos, startToEnd.Unit * startToEnd.Magnitude)
-end
-
 function tempentity.frame(self: Entity, deltaTime: number)
     --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
     local gravity = world.gravity * -deltaTime
@@ -44,7 +39,7 @@ function tempentity.frame(self: Entity, deltaTime: number)
     self.cframe *= CFrame.Angles(angularVelocity.X, angularVelocity.Y, angularVelocity.Z)
 
     --// trace (레이가 이동한 거리, raycast result)
-    local distance, result = tempentity.traceLine(localOrigin, self.cframe.Position)
+    local distance, result = physics.traceLine(localOrigin, self.cframe.Position)
     
     --// 만약 충돌하지 않았다면
     if not result then
