@@ -110,7 +110,12 @@ function physics.physicsGravity(self: Entity, deltaTime: number): Vector3
     self.velocity = velocity
 
     --// 이동한 거리를 반환
-    return Vector3.new(velocity.X * deltaTime, ((velocity.Y + newYVelocity) / 2) * deltaTime, self.cframe.Z + velocity.Z * deltaTime)
+    --// y 는 평균 이동 속도에 dt 를 곱한값
+    return Vector3.new(
+        velocity.X * deltaTime, 
+        ((velocity.Y + newYVelocity) / 2) * deltaTime, 
+        velocity.Z * deltaTime
+    )
 end
 
 return physics
