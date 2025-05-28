@@ -66,8 +66,6 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
             self.angularVelocity = angle
 
             --// 플레그 비활성화
-            self.flags.fRotate = false
-            self.flags.fSlowGravity = false
             self.flags.fGravity = false
             self.flags.fCollideWorld = false
         end

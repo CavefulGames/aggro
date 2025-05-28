@@ -1,12 +1,20 @@
 local physics = require('./physics')
 local world = require('./world')
 
-export type Entity = physics.Entity
+export type Entity = physics.Entity & {
+    flags: {
+        --// 느린 중력의 영향을 받는지 (fGravity 가 켜저있다면 적용돼지 않음)
+        fSlowGravity: boolean?,
+        
+        --// 속도에따라 회전을 하는지
+        fRotate: boolean?, 
+    }
+}
 
 local tempentity = {}
 
 function tempentity.entity(): Entity
-    return physics.entity()
+    return physics.entity() :: Entity
 end
 
 function tempentity.frame(self: Entity, deltaTime: number)

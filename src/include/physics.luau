@@ -9,10 +9,8 @@ export type Entity = typeof(setmetatable({} :: {
 
     --// 플레그들 (앞의 f 는 flag 라는 뜻)
     flags: {
-        fRotate: boolean?, --// 회전을 하는지
         fCollideWorld: boolean?, --// World 충돌을 받는지
         fGravity: boolean?, --// 중력의 영향을 받는지
-        fSlowGravity: boolean?, --// 느린 중력의 영향을 받는지 (fGravity 가 켜저있다면 적용돼지 않음)
     },
 
     --// 레이케스트 법선백터
