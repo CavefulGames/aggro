@@ -12,6 +12,7 @@ local grenade = {}
 function grenade.grenade(): Grenade
     local entitiy = physics.entity() :: Grenade
 
+    --// 초기 탄성계수는 0.5
     entitiy.elasticity = 0.5
     
     return entitiy
@@ -21,16 +22,16 @@ function grenade.frame(self: Grenade, deltaTime: number)
     --// 일반물리 적용하기
     physics.frame(self, deltaTime)
 
-    --// 수류탄이 현제 충돌 상태가 아니라면 반환
-    if not self.isCollision then
-        return
-    end
-
     --// 수류탄 충돌 실행
     grenade.grenadeCollision(self, deltaTime)
 end
 
 function grenade.grenadeCollision(self: Grenade, deltaTime: number)
+    --// 수류탄이 현제 충돌 상태가 아니라면 반환
+    if not self.isCollision then
+        return
+    end
+
     --// 수류탄이 충돌하지 않는다면 반환
     if not self.flags.fCollideWorld then
         return
@@ -65,7 +66,7 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
             --// 반사각도로 각속도 주기
             self.angularVelocity = angle
 
-            --// 플레그 비활성화
+            --// 플레그 비활성화 (중력, 충돌)
             self.flags.fGravity = false
             self.flags.fCollideWorld = false
         end
