@@ -53,7 +53,7 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
         self.velocity = velocity
 
         --// velocity 값이 30보다 작다면
-        if speedSquare < (30 * 30) then
+        if speedSquare < (10 * 10) then
             --// 속도와 초기화
             self.velocity = Vector3.zero
             
@@ -75,7 +75,7 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
     else
         --// 충돌 각도가 0.7 이하이고
         --// velocity 값이 30보다 작다면
-        if speedSquare < (30 * 30) then
+        if speedSquare < (10 * 10) then
             --// 각속도, 속도 초기화
             self.velocity = Vector3.zero
             self.angularVelocity = Vector3.zero
