@@ -1,7 +1,7 @@
 local world = require('./world')
 local vector = require('./vecotr_main_utils')
 
-export type Vector = vector.Vector
+type Vector = vector.Vector
 
 export type Entity = typeof(setmetatable({} :: {
     angularVelocity: Vector , --// 회전 (deg)
