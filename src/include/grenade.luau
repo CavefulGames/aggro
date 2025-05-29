@@ -56,7 +56,7 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
         --// velocity 값이 30보다 작다면
         if speedSquare < (30 * 30 * 0.0254) then
             --// 속도와 초기화
-            self.velocity = vector.zero
+            self.velocity = vector.zero()
             
             --// normal 각도 구하기
             local angle = math_main_utils.vectorAngle(self.normal)
@@ -78,8 +78,8 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
         --// velocity 값이 30보다 작다면
         if speedSquare < (30 * 30 * 0.0254) then
             --// 각속도, 속도 초기화
-            self.velocity = vector.zero
-            self.angularVelocity = vector.zero
+            self.velocity = vector.zero()
+            self.angularVelocity = vector.zero()
             
         --// velocity 값이 30 이상이라면
         else

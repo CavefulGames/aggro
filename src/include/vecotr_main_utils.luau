@@ -1,7 +1,7 @@
 local vector_main_utils = {} :: VectorImpl & {
     create: (x: number, y: number, z: number) -> Vector,
-    zero: Vector,
-    one: Vector,
+    zero: () -> Vector,
+    one: () -> Vector,
 }
 vector_main_utils.__index = vector_main_utils
 
@@ -11,6 +11,7 @@ type VectorImpl = {
     sub: (((vec1: Vector, vec2: Vector) -> Vector) & ((vec1: Vector, vec2: number) -> Vector)),
     mul: (((vec1: Vector, vec2: Vector) -> Vector) & ((vec1: Vector, vec2: number) -> Vector)),
     div: (((vec1: Vector, vec2: Vector) -> Vector) & ((vec1: Vector, vec2: number) -> Vector)),
+    
     dot: (vec1: Vector, vec2: Vector) -> number,
     
     getMagnitude: (vec: Vector) -> number,
@@ -129,13 +130,18 @@ function vector_main_utils.getUnit(vec)
     local magnitude = vec:getMagnitude()
     
     if magnitude == 0 then
-        return vector_main_utils.zero
+        return vector_main_utils.create(0, 0, 0)
     end
 
     return vec:div(magnitude)
 end
 
-vector_main_utils.zero = vector_main_utils.create(0, 0, 0)
-vector_main_utils.one = vector_main_utils.create(1, 1, 1)
+function vector_main_utils.zero()
+    return vector_main_utils.create(0, 0, 0)
+end
+
+function vector_main_utils.one() 
+    return vector_main_utils.create(1, 1, 1)
+end
 
 return vector_main_utils

@@ -27,15 +27,15 @@ local physics = {}
 
 function physics.entity(): Entity
     return setmetatable({
-        angularVelocity = vector.zero,
-        velocity = vector.zero,
-        acceleration = vector.zero,
+        angularVelocity = vector.zero(),
+        velocity = vector.zero(),
+        acceleration = vector.zero(),
     
-        cframe = CFrame.new(vector.zero:toVector3()),
+        cframe = CFrame.new(vector.zero():toVector3()),
         
         flags = {},
 
-        normal = vector.zero,
+        normal = vector.zero(),
 
         isCollision = false,
     }, {})
@@ -97,7 +97,7 @@ end
 function physics.physicsGravity(self: Entity, deltaTime: number): Vector
     --// 중력의 영향을 받지 않는다면 움직이지 않음
     if not self.flags.fGravity then
-        return vector.zero
+        return vector.zero()
     end
 
     --// 현제 엔티티의 속도
