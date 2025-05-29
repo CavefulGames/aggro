@@ -6,5 +6,5 @@
 --// cavefx.VolumetricSmoke -- 부피를 가지는 연기 효과
 --// cavefx.ProjectedDecal -- Surface Gui 가짜 프로젝션 데칼
 
---// TODO: grenade.luau (수류탄물리) 충돌시 땅으로 가라앉는문제 고치기, knife_throwing.luau 완성 
+--// knife_throwing.luau 완성 
 --// project sync 해서 rojo 로 관리하기
