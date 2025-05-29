@@ -1,4 +1,5 @@
 local grenade = require('../include/grenade')
+local vector = require('../include/vecotr_main_utils')
 
 local part = Instance.new('Part', workspace)
 part.Name = 'Grenade'
@@ -8,8 +9,7 @@ part.Color = Color3.new(1, 0, 0)
 
 local entity =  grenade.grenade()
 entity.cframe = CFrame.new(0, 10, 0)
-entity.velocity = Vector3.new(00, 200, 3)
-entity.angularVelocity = Vector3.new(math.random(1, 100), math.random(1, 100), 0)
+entity.velocity = vector.create(00, 200, 3)
 
 entity.flags.fGravity = true
 entity.flags.fCollideWorld = true

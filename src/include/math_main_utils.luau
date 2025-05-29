@@ -1,17 +1,19 @@
+local vector = require('./vecotr_main_utils')
+
 local math_main_utils = {}
 
-function math_main_utils.vectorAngle(forward: Vector3)
+function math_main_utils.vectorAngle(forward: vector.Vector)
     --// pitch: 위아래로 얼마나 기울여져있는지 (Y축을 기준으로)
     --// yaw: 좌우로 어느방향인지 (지면을 기준으로 얼마나 회전해있는지 (Z 축을 기준으로))
     local yaw: number, pitch: number
     
     --// 만약 y 에만 값이 있는상태가 아니라면 
-    if not (forward.X == 0 and forward.Z == 0) then
+    if not (forward.x == 0 and forward.z == 0) then
         --// 좌우 값이 없음 --> yaw 값은 0
         yaw = 0
 
         --// y 기준으로 pitch 정하기 
-        if forward.Y > 0 then
+        if forward.y > 0 then
             --// 양수라면 (위를 향한다면) 270 (-90)
             pitch = 270
         else
@@ -97,7 +99,7 @@ function math_main_utils.vectorAngle(forward: Vector3)
 
         --// forward Z 와 X 의 각도를 구함 (방향을 포함한)
         --// yaw 는 deg 이므로 180 / pi 를 곱해줌
-        yaw = math.atan2(forward.Z, forward.X) * 180 / math.pi
+        yaw = math.atan2(forward.z, forward.x) * 180 / math.pi
 
         --// atan2 는 3, 4 사분면에 위치하는 각의경우 음수를 주기때문에
         --// 양수 각도로 바꿔줌 (360 - 45 = 315(deg))
@@ -106,7 +108,7 @@ function math_main_utils.vectorAngle(forward: Vector3)
         end
 
         --// tmp 는 forward 의 x 와 z 사이의 거리임 (피타고라스 (x*x + y*y) = z*z)
-        local tmp = (forward.X*forward.X + forward.Z*forward.Z) ^ 0.5
+        local tmp = (forward.x*forward.x + forward.z*forward.z) ^ 0.5
 
         --// 기울기는 x 와 z 사이의 선과 y 의 기울기
         --// 즉 각도는 밑변과 높이사이의 각도
@@ -114,7 +116,7 @@ function math_main_utils.vectorAngle(forward: Vector3)
         --// TODO: 테스트 해보고 - 넣어야할지 결정
         
         --// 즉 pitch 는 밑면과 높이의 각도 즉 위 아래로 얼마나 기우러져있는지
-        pitch = math.atan2(-forward.Y, tmp) * 180 / math.pi
+        pitch = math.atan2(-forward.y, tmp) * 180 / math.pi
 
         --// pitch 가 음수이면 양수로 바꿔주기
         if pitch < 0 then
@@ -124,8 +126,7 @@ function math_main_utils.vectorAngle(forward: Vector3)
 
     --// roll 값은 처리 안함
 
-    --// TODO: 테스트 해보고 Vector3.new(pitch, 0, yaw) 로 바꿔야할지 결정
-    return Vector3.new(pitch, yaw, 0)
+    return vector.create(pitch, yaw, 0)
 end
 
 return math_main_utils
