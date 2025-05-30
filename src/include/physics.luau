@@ -1,12 +1,10 @@
 local world = require('./world')
-local vector = require('./vecotr_main_utils')
-
-type Vector = vector.Vector
+local vector_main_utils = require('./vector_main_utils')
 
 export type Entity = typeof(setmetatable({} :: {
-    angularVelocity: Vector , --// 회전 (deg)
-    velocity: Vector, --// 속도 (v)
-    acceleration: Vector, --// 가속도 (a)
+    angularVelocity: Vector3 , --// 회전 (deg)
+    velocity: Vector3, --// 속도 (v)
+    acceleration: Vector3, --// 가속도 (a)
     
     cframe: CFrame, --// Entitiy 의 CFrame
 
@@ -17,7 +15,7 @@ export type Entity = typeof(setmetatable({} :: {
     },
 
     --// 레이케스트 법선백터
-    normal: Vector,
+    normal: Vector3,
 
     --// 충돌여부
     isCollision: boolean,
@@ -27,48 +25,48 @@ local physics = {}
 
 function physics.entity(): Entity
     return setmetatable({
-        angularVelocity = vector.zero(),
-        velocity = vector.zero(),
-        acceleration = vector.zero(),
+        angularVelocity = Vector3.zero,
+        velocity = Vector3.zero,
+        acceleration = Vector3.zero,
     
-        cframe = CFrame.new(vector.zero():toVector3()),
+        cframe = CFrame.new(Vector3.zero),
         
         flags = {},
 
-        normal = vector.zero(),
+        normal = Vector3.zero,
 
         isCollision = false,
     }, {})
 end
 
 --// v0: 이전위치 v1: 현제위치
-function physics.traceLine(v0: Vector, v1: Vector): (number, RaycastResult?)
+function physics.traceLine(v0: Vector3, v1: Vector3): (number, RaycastResult?)
     --// 백터 뺄셈 (v0(이전위치) -> v1(현제위치))
-	local vec = v1:sub(v0)
+	local vec = v1 - v0
 
     --// vec 스칼라 (뺀 값 즉 이동거리), 현제위치에서 과거위치에서 현제위치로 쏜 레이케스트
-	return vec:getMagnitude(), workspace:Raycast(v0:toVector3(), vec:getUnit():toVector3() * vec:getMagnitude())
+	return vec.Magnitude, workspace:Raycast(v0, vec.Unit * vec.Magnitude)
 end
 
 function physics.frame(self: Entity, deltaTime: number)
     --// 이전위치
-    local originPosition = vector.fromVector3(self.cframe.Position)
-    
+    local originPosition = self.cframe.Position
+
     --// gravity 를 적용한후 위치
-    local currentPosition = physics.physicsGravity(self, deltaTime):add(originPosition)
+    local currentPosition = physics.physicsGravity(self, deltaTime) + originPosition
     
     --// 라디안 각도로 엥귤러 벨로시티를 만듬
-    local angularVelocity = self.angularVelocity:mul(180 / math.pi)
+    local angularVelocity = self.angularVelocity * 180 / math.pi
 
     --// self 의 cframe 에 중력, 회전 적용
-    self.cframe = CFrame.new(currentPosition:getXYZ()) * CFrame.Angles(angularVelocity:getXYZ())
+    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * CFrame.Angles(vector_main_utils.getXYZ(angularVelocity))
 
     --// 충돌처리등..
     physics.physicsTrace(self, originPosition, currentPosition)
 end
 
 --// v0: 이전위치 v1: 현제위치
-function physics.physicsTrace(self: Entity, v0: Vector, v1: Vector)
+function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
     --// trace (레이가 이동한 거리 (스칼라), raycast result)
     local distance, result = physics.traceLine(v0, v1)
 
@@ -88,16 +86,16 @@ function physics.physicsTrace(self: Entity, v0: Vector, v1: Vector)
     end
 
     --// self 의 normal 을 설정
-    self.normal = vector.fromVector3(result.Normal)
+    self.normal = result.Normal
 
     --// self 가 충돌함으로 변경
     self.isCollision = true
 end
 
-function physics.physicsGravity(self: Entity, deltaTime: number): Vector
+function physics.physicsGravity(self: Entity, deltaTime: number): Vector3
     --// 중력의 영향을 받지 않는다면 움직이지 않음
     if not self.flags.fGravity then
-        return vector.zero()
+        return Vector3.zero
     end
 
     --// 현제 엔티티의 속도
@@ -107,18 +105,18 @@ function physics.physicsGravity(self: Entity, deltaTime: number): Vector
     --// 등가속도 운동의 기본공식 (속도) v = v0 + at
     --// 중력은 아래로 작용하기에 중력가속도(a)를 빼줌
     --// 즉 현제 속도 (v0) - 중력가속도 (a) * deltaTime (t)
-    local newYVelocity = velocity.y - world.gravity * deltaTime
+    local newYVelocity = velocity.Y - world.gravity * deltaTime
 
     --// 현제속도에 중력을 적용
-    velocity.y = newYVelocity
+    velocity = vector_main_utils.setY(velocity, newYVelocity)
 
     --// 현제속도에 중력을 적용
     self.velocity = velocity
 
     --// 이동한 거리를 반환
     --// y 는 평균 이동 속도에 dt 를 곱한값
-    velocity = velocity:mul(deltaTime)
-    velocity.y = ((velocity.y + newYVelocity) / 2) * deltaTime
+    velocity = velocity * deltaTime
+    velocity = vector_main_utils.setY(velocity, ((velocity.Y + newYVelocity) / 2) * deltaTime)
     
     return velocity
 end

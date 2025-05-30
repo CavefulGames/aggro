@@ -1,7 +1,4 @@
-local vector = require('./vecotr_main_utils')
 local physics = require('./physics')
-
-type Vector = vector.Vector
 
 export type Knife = physics.Entity & {
     r: number
