@@ -13,6 +13,7 @@ export type Entity = physics.Entity & {
 }
 
 local tempentity = {}
+tempentity.world = world
 
 function tempentity.entity(): Entity
     return physics.entity() :: Entity
@@ -20,7 +21,7 @@ end
 
 function tempentity.frame(self: Entity, deltaTime: number)
     --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
-    local gravity = world.gravity * -deltaTime
+    local gravity = tempentity.world.gravity * -deltaTime
 
     --// flag 중에 느린 중력이 켜져있을때 적용시킬 중력
     local gravitySlow = gravity * 0.5

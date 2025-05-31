@@ -22,6 +22,7 @@ export type Entity = typeof(setmetatable({} :: {
 }, {}))
 
 local physics = {}
+physics.world = world
 
 function physics.entity(): Entity
     return setmetatable({
@@ -105,7 +106,7 @@ function physics.physicsGravity(self: Entity, deltaTime: number): Vector3
     --// 등가속도 운동의 기본공식 (속도) v = v0 + at
     --// 중력은 아래로 작용하기에 중력가속도(a)를 빼줌
     --// 즉 현제 속도 (v0) - 중력가속도 (a) * deltaTime (t)
-    local newYVelocity = velocity.Y - world.gravity * deltaTime
+    local newYVelocity = velocity.Y - physics.world.gravity * deltaTime
 
     --// 현제속도에 중력을 적용
     velocity = vector_main_utils.setY(velocity, newYVelocity)
