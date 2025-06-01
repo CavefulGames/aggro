@@ -7,4 +7,3 @@
 --// cavefx.ProjectedDecal -- Surface Gui 가짜 프로젝션 데칼
 
 --// knife_throwing.luau 완성 
---// project sync 해서 rojo 로 관리하기

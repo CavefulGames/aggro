@@ -111,8 +111,6 @@ function math_main_utils.vectorAngle(forward: Vector3)
         --// 기울기는 x 와 z 사이의 선과 y 의 기울기
         --// 즉 각도는 밑변과 높이사이의 각도
         
-        --// TODO: 테스트 해보고 - 넣어야할지 결정
-        
         --// 즉 pitch 는 밑면과 높이의 각도 즉 위 아래로 얼마나 기우러져있는지
         pitch = math.atan2(-forward.Y, tmp) * 180 / math.pi
 
