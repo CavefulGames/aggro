@@ -1,15 +1,13 @@
 local physics = require('./physics')
 
 export type Knife = physics.Entity & {
-    r: number
+
 }
 
 local knife_throwing = {}
 
 function knife_throwing.knife(): Knife
     local knife = physics.entity() :: Knife
-
-    knife.r = 1
 
     return knife
 end

@@ -12,6 +12,7 @@ export type Entity = typeof(setmetatable({} :: {
     flags: {
         fCollideWorld: boolean?, --// World 충돌을 받는지
         fGravity: boolean?, --// 중력의 영향을 받는지
+        fRotate: boolean?, --// 속도에따라 회전을 하는지
     },
 
     --// 레이케스트 법선백터
@@ -56,14 +57,25 @@ function physics.frame(self: Entity, deltaTime: number)
     --// gravity 를 적용한후 위치
     local currentPosition = physics.physicsGravity(self, deltaTime) + originPosition
     
-    --// 라디안 각도로 엥귤러 벨로시티를 만듬
-    local angularVelocity = self.angularVelocity * 180 / math.pi
+    --// 각속도 처리
+    physics.angularFrame(self, deltaTime)
 
     --// self 의 cframe 에 중력, 회전 적용
-    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * CFrame.Angles(vector_main_utils.getXYZ(angularVelocity))
+    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * CFrame.Angles(vector_main_utils.getXYZ(self.angularVelocity))
 
     --// 충돌처리등..
     physics.physicsTrace(self, originPosition, currentPosition)
+end
+
+function physics.angularFrame(self: Entity, deltaTime: number)
+    --// 속도로 회전 제어
+    if self.flags.fRotate then
+        --// 엥귤러 벨로시티를 velocity * dt 로 변경 
+        self.angularVelocity = self.velocity * deltaTime
+    end
+
+    --// 라디안 각도로 엥귤러 벨로시티를 만듬
+    self.angularVelocity = self.angularVelocity * 180 / math.pi    
 end
 
 --// v0: 이전위치 v1: 현제위치
