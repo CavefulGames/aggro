@@ -13,6 +13,8 @@ local elasticity = 80
 ball.flags.fGravity = true
 ball.flags.fCollideWorld = true
 
+physics.world.gravity = 100
+
 local s
 while true do
 	if s then
