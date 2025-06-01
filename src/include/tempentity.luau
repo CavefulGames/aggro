@@ -6,6 +6,8 @@ export type Entity = physics.Entity & {
     flags: {
         --// 느린 중력의 영향을 받는지 (fGravity 가 켜저있다면 적용돼지 않음)
         fSlowGravity: boolean?,
+        --// 속도에따라 회전을 하는지
+        fRotate: boolean?, 
     }
 }
 

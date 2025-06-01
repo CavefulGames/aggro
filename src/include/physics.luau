@@ -12,7 +12,6 @@ export type Entity = typeof(setmetatable({} :: {
     flags: {
         fCollideWorld: boolean?, --// World 충돌을 받는지
         fGravity: boolean?, --// 중력의 영향을 받는지
-        fRotate: boolean?, --// 속도에따라 회전을 하는지
     },
 
     --// 레이케스트 법선백터
@@ -68,12 +67,7 @@ function physics.frame(self: Entity, deltaTime: number)
 end
 
 function physics.physicsAngular(self: Entity, deltaTime: number)
-    --// todo: 각속도로 바꾸기 (현제는 그냥 속도 혹은 각도로 바로바꿈)
-
-    if self.flags.fRotate then
-        --// 엥귤러 벨로시티를 velocity * dt 로 변경 
-        self.angularVelocity = self.velocity * deltaTime
-    end
+    --// FIXME: 각속도로 바꾸기 (현제는 그냥 속도 혹은 각도로 바로바꿈)
 
     --// 회전 적용 (라디안)
     return self.angularVelocity * math.pi / 180
