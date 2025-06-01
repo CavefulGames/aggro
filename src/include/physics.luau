@@ -68,6 +68,8 @@ function physics.frame(self: Entity, deltaTime: number)
 end
 
 function physics.physicsAngular(self: Entity, deltaTime: number)
+    --// todo: 각속도로 바꾸기 (현제는 그냥 속도 혹은 각도로 바로바꿈)
+
     if self.flags.fRotate then
         --// 엥귤러 벨로시티를 velocity * dt 로 변경 
         self.angularVelocity = self.velocity * deltaTime
