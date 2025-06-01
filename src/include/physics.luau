@@ -58,24 +58,23 @@ function physics.frame(self: Entity, deltaTime: number)
     local currentPosition = physics.physicsGravity(self, deltaTime) + originPosition
     
     --// 각속도 처리
-    physics.angularFrame(self, deltaTime)
+    local angularVelocity = physics.physicsAngular(self, deltaTime)
 
     --// self 의 cframe 에 중력, 회전 적용
-    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * CFrame.Angles(vector_main_utils.getXYZ(self.angularVelocity))
+    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * CFrame.Angles(vector_main_utils.getXYZ(angularVelocity))
 
     --// 충돌처리등..
     physics.physicsTrace(self, originPosition, currentPosition)
 end
 
-function physics.angularFrame(self: Entity, deltaTime: number)
-    --// 속도로 회전 제어
+function physics.physicsAngular(self: Entity, deltaTime: number)
     if self.flags.fRotate then
         --// 엥귤러 벨로시티를 velocity * dt 로 변경 
         self.angularVelocity = self.velocity * deltaTime
     end
 
-    --// 라디안 각도로 엥귤러 벨로시티를 만듬
-    self.angularVelocity = self.angularVelocity * 180 / math.pi    
+    --// 회전 적용 (라디안)
+    return self.angularVelocity * math.pi / 180
 end
 
 --// v0: 이전위치 v1: 현제위치
