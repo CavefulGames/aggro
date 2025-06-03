@@ -38,6 +38,7 @@ function tempentity.update(deltaTime: number)
         if not entity.flags.fNaverDie then
             if entity.die < os.clock() then
                 table.remove(tempentity.entitys, i)
+                entity.isDie = true
             end
         end
         

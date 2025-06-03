@@ -34,6 +34,9 @@ export type Entity = {
 
     --// 죽을시간 (ex os.clock() + 10 << base)
     die: number,
+
+    --// 죽어있는지
+    isDie: boolean,
 }
 
 local physics = {}
@@ -66,6 +69,8 @@ function physics.entity(): Entity
         isAttachToTarget = false,
 
         die = os.clock() + 10,
+
+        isDie = false,
     }
 
     physics.entitys[#physics.entitys + 1] = entity
@@ -80,6 +85,7 @@ function physics.update(deltaTime: number)
         if not entity.flags.fNaverDie then
             if entity.die < os.clock() then
                 table.remove(physics.entitys, i)
+                entity.isDie = true
             end
         end
 
