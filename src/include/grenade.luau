@@ -4,10 +4,10 @@ local math_main_utils = require('./math_main_utils')
 local vector_main_utils = require('./vector_main_utils')
 local world = require('./world')
 
-export type Grenade = physics.Entity & typeof(setmetatable({} :: {
+export type Grenade = physics.Entity & {
     --// 충돌시 탄성계수
     elasticity: number,
-}, {}))
+}
 
 local grenade = {}
 grenade.world = table.clone(world)

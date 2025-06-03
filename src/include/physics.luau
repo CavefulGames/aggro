@@ -1,9 +1,8 @@
 local world = require('./world')
 local physics_main_utils = require('./physics_main_utils')
-local math_main_utils = require('./math_main_utils')
 local vector_main_utils = require('./vector_main_utils')
 
-export type Entity = typeof(setmetatable({} :: {
+export type Entity = {
     angularVelocity: Vector3 , --// 회전 가속도 (deg)
     velocity: Vector3, --// 속도 (v)
     acceleration: Vector3, --// 가속도 (a)
@@ -27,13 +26,13 @@ export type Entity = typeof(setmetatable({} :: {
 
     --// 꽃혀있는지 여부
     isAttachToTarget: boolean,
-}, {}))
+}
 
 local physics = {}
 physics.world = table.clone(world)
 
 function physics.entity(): Entity
-    return setmetatable({
+    return {
         angularVelocity = Vector3.zero,
         velocity = Vector3.zero,
         acceleration = Vector3.zero,
@@ -49,7 +48,7 @@ function physics.entity(): Entity
         isCollision = false,
 
         isAttachToTarget = false,
-    }, {})
+    }
 end
 
 function physics.frame(self: Entity, deltaTime: number)

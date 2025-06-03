@@ -7,3 +7,5 @@
 --// cavefx.ProjectedDecal -- Surface Gui 가짜 프로젝션 데칼
 
 --// knife_throwing.luau 완성 
+
+local aggro = {}
