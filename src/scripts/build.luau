@@ -19,7 +19,7 @@ include.Name = 'include'
     
     for i, filename in include do
         local source = fs.readFile('src/include/' .. filename)
-        local vaible = '_' .. i
+        local vaible = filename:gsub('.luau', '')
         output ..= `local {vaible} = Instance.new('ModuleScript', include); {vaible}.Name = '{filename:gsub('.luau', '')}'; {vaible}.Source = [[{source}]]\n`
     end
 
