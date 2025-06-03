@@ -8,8 +8,10 @@ part.Color = Color3.new(1, 0, 0)
 
 local entity = physics.entity()
 entity.cframe = CFrame.new(0, 10, 0)
-entity.velocity = Vector3.new(3, 100, 0)
-entity.angularVelocity = Vector3.one * 100 * math.pi / 180
+entity.velocity = Vector3.new(0, 100, 0)
+entity.angularVelocity = Vector3.one * 10000
+
+physics.world.gravity = 100
 
 entity.flags.fGravity = true
 entity.flags.fCollideWorld = true

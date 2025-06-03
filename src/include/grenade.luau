@@ -22,9 +22,6 @@ function grenade.grenade(): Grenade
 end
 
 function grenade.frame(self: Grenade, deltaTime: number)
-    --// grenade 는 각속도를 사용하지 않음
-    self.angularVelocity = Vector3.zero
-
     --// physics 에서 사용하는 world 를 수류탄 world 랑 같게
     physics.world = grenade.world
 
