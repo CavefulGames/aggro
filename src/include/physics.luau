@@ -59,7 +59,7 @@ function physics.frame(self: Entity, deltaTime: number)
     
     --// 각속도 처리
     local currentAngle = physics.physicsAngular(self, deltaTime) * self.angle
-    
+
     --// 충돌처리등..
     physics.physicsTrace(self, self.position, currentPosition)
     
@@ -70,8 +70,6 @@ function physics.frame(self: Entity, deltaTime: number)
 end
 
 function physics.physicsAngular(self: Entity, deltaTime: number)
-    --// FIXME: 각속도로 바꾸기 (현제는 그냥 속도 혹은 각도로 바로바꿈)
-
     --// 회전 적용 (라디안)
     return CFrame.Angles(vector_main_utils.getXYZ(self.angularVelocity * deltaTime * math.pi / 180))
 end
