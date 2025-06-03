@@ -21,5 +21,11 @@ task.wait(1)
 
 RunService.Heartbeat:Connect(function(deltaTime)
 	physics.frame(knife_physics, deltaTime)
+    
+    if knife_physics.isAttachToTarget then
+        knife_physics.flags.fGravity = false
+        knife_physics.flags.fCollideWorld = false
+    end
+
     knife_part.CFrame = knife_physics.cframe
 end)
