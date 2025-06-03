@@ -7,6 +7,8 @@ export type Entity = typeof(setmetatable({} :: {
     acceleration: Vector3, --// 가속도 (a)
     
     cframe: CFrame, --// Entitiy 의 CFrame
+    position: Vector3, -- //위치
+    angle: CFrame, --// 회전한 각도 (CFrame Angle) (rad)
 
     --// 플레그들 (앞의 f 는 flag 라는 뜻)
     flags: {
@@ -22,16 +24,18 @@ export type Entity = typeof(setmetatable({} :: {
 }, {}))
 
 local physics = {}
-physics.world = world
+physics.world = table.clone(world)
 
 function physics.entity(): Entity
     return setmetatable({
         angularVelocity = Vector3.zero,
         velocity = Vector3.zero,
         acceleration = Vector3.zero,
-    
+
         cframe = CFrame.new(Vector3.zero),
-        
+        position = Vector3.zero,
+        angle = CFrame.Angles(0, 0, 0),
+
         flags = {},
 
         normal = Vector3.zero,
@@ -50,27 +54,26 @@ function physics.traceLine(v0: Vector3, v1: Vector3): (number, RaycastResult?)
 end
 
 function physics.frame(self: Entity, deltaTime: number)
-    --// 이전위치
-    local originPosition = self.cframe.Position
-
     --// gravity 를 적용한후 위치
-    local currentPosition = physics.physicsGravity(self, deltaTime) + originPosition
+    local currentPosition = physics.physicsGravity(self, deltaTime) + self.position
     
     --// 각속도 처리
-    local angularVelocity = physics.physicsAngular(self, deltaTime)
-
-    --// self 의 cframe 에 중력, 회전 적용
-    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * CFrame.Angles(vector_main_utils.getXYZ(angularVelocity))
-
+    local currentAngle = physics.physicsAngular(self, deltaTime) * self.angle
+    
     --// 충돌처리등..
-    physics.physicsTrace(self, originPosition, currentPosition)
+    physics.physicsTrace(self, self.position, currentPosition)
+    
+    --// self 의 cframe 에 중력, 회전 적용
+    self.cframe = CFrame.new(vector_main_utils.getXYZ(currentPosition)) * currentAngle
+    self.position = currentPosition
+    self.angle = currentAngle
 end
 
 function physics.physicsAngular(self: Entity, deltaTime: number)
     --// FIXME: 각속도로 바꾸기 (현제는 그냥 속도 혹은 각도로 바로바꿈)
 
     --// 회전 적용 (라디안)
-    return self.angularVelocity * math.pi / 180
+    return CFrame.Angles(vector_main_utils.getXYZ(self.angularVelocity * deltaTime * math.pi / 180))
 end
 
 --// v0: 이전위치 v1: 현제위치

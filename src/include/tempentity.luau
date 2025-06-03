@@ -12,7 +12,7 @@ export type Entity = physics.Entity & {
 }
 
 local tempentity = {}
-tempentity.world = world
+tempentity.world = table.clone(world)
 
 function tempentity.entity(): Entity
     return physics.entity() :: Entity
@@ -20,7 +20,7 @@ end
 
 function tempentity.frame(self: Entity, deltaTime: number)
     --// 레이케스트가 아무곳에도 닿지 않았을때 적용해줄 중력 (음수)
-    local gravity = tempentity.world.gravity * -deltaTime
+    local gravity = tempentity.world.gravity * deltaTime
 
     --// flag 중에 느린 중력이 켜져있을때 적용시킬 중력
     local gravitySlow = gravity * 0.5
@@ -55,11 +55,11 @@ function tempentity.frame(self: Entity, deltaTime: number)
         --// 기본 중력의 영향을 받는 상태라면
         if self.flags.fGravity then
             --// velocity 의 y 에 중력만 더해줌
-            self.velocity = vector_main_utils.setY(self.velocity, gravity)
+            self.velocity = vector_main_utils.setY(self.velocity, self.velocity.Y - gravity)
         --// 느린 중력의 영향을 받는 상태라면
         elseif self.flags.fSlowGravity then
             --// velocity 의 y 에 Slow 상태일때의 중력을 더해줌 (gravity * 0.5)
-            self.velocity = vector_main_utils.setY(self.velocity, gravitySlow)
+            self.velocity = vector_main_utils.setY(self.velocity, self.velocity.Y + gravitySlow)
         end
 
         --// 리턴
@@ -95,7 +95,7 @@ function tempentity.frame(self: Entity, deltaTime: number)
         --// Trace Normal 이 1 에 가까움 (바닥에 닿았다면)
         if result.Normal.Y > 0.9 then
             --// velocity y 가 0 이랑 같거나 작음 (밑으로 떨어지는중이거나 정지한 상태) 이고 낙하속도가 (-g * dt * 3) 보다 크다면
-            if self.velocity.Y <= 0 and self.velocity.Y >= gravity * 3 then
+            if self.velocity.Y <= 0 and self.velocity.Y >= -gravity * 3 then
                 --// 감쇠 계수를 0 으로
                 dampingFactor = 0
 

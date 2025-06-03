@@ -2,6 +2,7 @@ local physics = require('./physics')
 local physics_main_utils = require('./physics_main_utils')
 local math_main_utils = require('./math_main_utils')
 local vector_main_utils = require('./vector_main_utils')
+local world = require('./world')
 
 export type Grenade = physics.Entity & typeof(setmetatable({} :: {
     --// 충돌시 탄성계수
@@ -9,6 +10,7 @@ export type Grenade = physics.Entity & typeof(setmetatable({} :: {
 }, {}))
 
 local grenade = {}
+grenade.world = table.clone(world)
 
 function grenade.grenade(): Grenade
     local entitiy = physics.entity() :: Grenade
@@ -20,6 +22,12 @@ function grenade.grenade(): Grenade
 end
 
 function grenade.frame(self: Grenade, deltaTime: number)
+    --// grenade 는 각속도를 사용하지 않음
+    self.angularVelocity = Vector3.zero
+
+    --// physics 에서 사용하는 world 를 수류탄 world 랑 같게
+    physics.world = grenade.world
+
     --// 일반물리 적용하기
     physics.frame(self, deltaTime)
 
