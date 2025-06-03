@@ -60,7 +60,7 @@ function grenade.grenadeCollision(self: Grenade, deltaTime: number)
 
         --// velocity 값이 30보다 작다면
         if speedSquare < (30 * 30 * 0.0254) then
-            --// 속도와 초기화
+            --// 속도 초기화
             self.velocity = Vector3.zero
             
             --// normal 각도 구하기
