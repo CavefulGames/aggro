@@ -2,7 +2,7 @@ local world = require('./world')
 local vector_main_utils = require('./vector_main_utils')
 
 export type Entity = typeof(setmetatable({} :: {
-    angularVelocity: Vector3 , --// 회전 (deg)
+    angularVelocity: Vector3 , --// 회전 가속도 (deg)
     velocity: Vector3, --// 속도 (v)
     acceleration: Vector3, --// 가속도 (a)
     
