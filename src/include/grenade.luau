@@ -3,6 +3,7 @@ local physics_main_utils = require('./physics_main_utils')
 local math_main_utils = require('./math_main_utils')
 local vector_main_utils = require('./vector_main_utils')
 local world = require('./world')
+local define = require('./define')
 
 export type Grenade = physics.Entity & {
     --// 충돌시 탄성계수
@@ -10,15 +11,45 @@ export type Grenade = physics.Entity & {
 }
 
 local grenade = {}
+
 grenade.world = table.clone(world)
 
-function grenade.grenade(): Grenade
+grenade.entitys = {} :: { [number]: Grenade }
+grenade.max_entitys = define.max_entitys
+
+function grenade.entitiy(): Grenade
+    if #grenade.entitys >= grenade.max_entitys then
+        return error('overflow the max entitys')
+    end
+
     local entitiy = physics.entity() :: Grenade
 
     --// 초기 탄성계수는 0.5
     entitiy.elasticity = 0.5
+
+    grenade.entitys[#grenade.entitys + 1] = entitiy
     
     return entitiy
+end
+
+function grenade.update(deltaTime: number)
+    for i=1, #grenade.entitys do
+        local entity = grenade.entitys[i]
+        
+        if not entity.flags.fNaverDie then
+            if entity.die < os.clock() then
+                table.remove(grenade.entitys, i)
+            end
+        end
+
+        grenade.frame(entity, deltaTime)
+
+        if not entity.render then
+            continue
+        end
+
+        entity.render.CFrame = entity.cframe
+    end
 end
 
 function grenade.frame(self: Grenade, deltaTime: number)

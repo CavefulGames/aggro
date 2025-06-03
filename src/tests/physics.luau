@@ -16,11 +16,12 @@ physics.world.gravity = 100
 entity.flags.fGravity = true
 entity.flags.fCollideWorld = true
 
+entity.render = part
+
 local RunService = game:GetService('RunService')
 
 task.wait(1)
 
 RunService.Heartbeat:Connect(function(deltaTime)
-	physics.frame(entity, deltaTime)
-	part.CFrame = entity.cframe
+	physics.update(deltaTime)
 end)

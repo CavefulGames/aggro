@@ -4,10 +4,10 @@ local test_build_info = {
     examples = {
         physics_knife = false,
         pigu_ball = false,
-        ['simple-knife-throwing'] = true
+        ['simple-knife-throwing'] = false
     },
     tests = {
-        grenade = false,
+        grenade = true,
         knife = false,
         physics = false,
         tempentity = false,

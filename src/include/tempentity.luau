@@ -1,6 +1,7 @@
 local physics = require('./physics')
 local world = require('./world')
 local vector_main_utils = require('./vector_main_utils')
+local define = require('./define')
 
 export type Entity = physics.Entity & {
     flags: {
@@ -12,10 +13,42 @@ export type Entity = physics.Entity & {
 }
 
 local tempentity = {}
+
 tempentity.world = table.clone(world)
 
+tempentity.entitys = {} :: { [number]: Entity }
+tempentity.max_entitys = define.max_entitys
+
 function tempentity.entity(): Entity
-    return physics.entity() :: Entity
+    if #tempentity.entitys >= tempentity.max_entitys then
+        return error('overflow the max entitys')
+    end
+    
+    local entity = physics.entity() :: Entity
+
+    tempentity.entitys[#tempentity.entitys + 1] = entity
+
+    return entity
+end
+
+function tempentity.update(deltaTime: number)
+    for i=1, #tempentity.entitys do
+        local entity = tempentity.entitys[i]
+        
+        if not entity.flags.fNaverDie then
+            if entity.die < os.clock() then
+                table.remove(tempentity.entitys, i)
+            end
+        end
+        
+        tempentity.frame(entity, deltaTime)
+
+        if not entity.render then
+            continue
+        end
+
+        entity.render.CFrame = entity.cframe
+    end
 end
 
 function tempentity.frame(self: Entity, deltaTime: number)

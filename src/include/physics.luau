@@ -1,6 +1,7 @@
 local world = require('./world')
 local physics_main_utils = require('./physics_main_utils')
 local vector_main_utils = require('./vector_main_utils')
+local define = require('./define')
 
 export type Entity = {
     angularVelocity: Vector3 , --// 회전 가속도 (deg)
@@ -15,7 +16,8 @@ export type Entity = {
     flags: {
         fCollideWorld: boolean?, --// World 충돌을 받는지
         fGravity: boolean?, --// 중력의 영향을 받는지
-        fCollisionBounce: boolean? --// 충돌반사를 사용하는지
+        fCollisionBounce: boolean?, --// 충돌반사를 사용하는지
+        fNaverDie: boolean?, --// 안죽는지
     },
 
     --// 레이케스트 법선백터
@@ -24,15 +26,29 @@ export type Entity = {
     --// 충돌여부
     isCollision: boolean,
 
-    --// 꽃혀있는지 여부
+    --// ~~꽃혀있는지 여부~~
     isAttachToTarget: boolean,
+
+    --// 프레임마다 렌더링될 파트
+    render: Part?,
+
+    --// 죽을시간 (ex os.clock() + 10 << base)
+    die: number,
 }
 
 local physics = {}
+
 physics.world = table.clone(world)
 
+physics.entitys = {} :: { [number]: Entity }
+physics.max_entitys = define.max_entitys
+
 function physics.entity(): Entity
-    return {
+    if #physics.entitys >= physics.max_entitys then
+        return error('overflow the max entitys')
+    end
+
+    local entity = {
         angularVelocity = Vector3.zero,
         velocity = Vector3.zero,
         acceleration = Vector3.zero,
@@ -48,7 +64,33 @@ function physics.entity(): Entity
         isCollision = false,
 
         isAttachToTarget = false,
+
+        die = os.clock() + 10,
     }
+
+    physics.entitys[#physics.entitys + 1] = entity
+
+    return entity
+end
+
+function physics.update(deltaTime: number)
+    for i=1, #physics.entitys do
+        local entity = physics.entitys[i]
+        
+        if not entity.flags.fNaverDie then
+            if entity.die < os.clock() then
+                table.remove(physics.entitys, i)
+            end
+        end
+
+        physics.frame(entity, deltaTime)
+
+        if not entity.render then
+            continue
+        end
+
+        entity.render.CFrame = entity.cframe
+    end
 end
 
 function physics.frame(self: Entity, deltaTime: number)
