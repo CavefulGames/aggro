@@ -37,6 +37,11 @@ export type Entity = {
 
     --// 죽어있는지
     isDie: boolean,
+
+    --// Events
+
+    --// 충돌시 callback
+    onHit: (self: Entity) -> ()?,
 }
 
 local physics = {}
@@ -186,6 +191,10 @@ function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
 
     if self.flags.fCollisionBounce then
         physics.physicsCollisionBounce(self)
+    end
+
+    if self.onHit then
+        self.onHit(self)
     end
 end
 
