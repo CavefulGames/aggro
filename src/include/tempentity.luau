@@ -2,6 +2,7 @@ local physics = require('./physics')
 local world = require('./world')
 local vector_main_utils = require('./vector_main_utils')
 local define = require('./define')
+local physics_main_utils = require('./physics_main_utils')
 
 export type Entity = physics.Entity & {
     flags: {
@@ -86,7 +87,7 @@ function tempentity.frame(self: Entity, deltaTime: number)
     self.cframe *= CFrame.Angles(vector_main_utils.getXYZ(angularVelocity))
 
     --// trace (레이가 이동한 거리, raycast result)
-    local distance, result = physics.traceLine(localOrigin, self.cframe.Position)
+    local distance, result = physics_main_utils.traceLine(localOrigin, self.cframe.Position)
     
     --// 만약 충돌하지 않았다면
     if not result then

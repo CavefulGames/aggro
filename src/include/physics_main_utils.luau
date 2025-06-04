@@ -30,4 +30,13 @@ function physics_main_utils.clipVelocity(velocity: Vector3, normal: Vector3, ove
     return result
 end
 
+--// v0: 이전위치 v1: 현제위치
+function physics_main_utils.traceLine(v0: Vector3, v1: Vector3): (number, RaycastResult?)
+    --// 백터 뺄셈 (v0(이전위치) -> v1(현제위치))
+	local vec = v1 - v0
+
+    --// vec 스칼라 (뺀 값 즉 이동거리), 현제위치에서 과거위치에서 현제위치로 쏜 레이케스트
+	return vec.Magnitude, workspace:Raycast(v0, vec.Unit * vec.Magnitude)
+end
+
 return physics_main_utils

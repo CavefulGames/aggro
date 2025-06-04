@@ -167,15 +167,6 @@ function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
 end
 
 --// v0: 이전위치 v1: 현제위치
-function physics.traceLine(v0: Vector3, v1: Vector3): (number, RaycastResult?)
-    --// 백터 뺄셈 (v0(이전위치) -> v1(현제위치))
-	local vec = v1 - v0
-
-    --// vec 스칼라 (뺀 값 즉 이동거리), 현제위치에서 과거위치에서 현제위치로 쏜 레이케스트
-	return vec.Magnitude, workspace:Raycast(v0, vec.Unit * vec.Magnitude)
-end
-
---// v0: 이전위치 v1: 현제위치
 function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
     --// 충돌할때 entity 크기를 구함
     local collisionSize = Vector3.zero
@@ -190,7 +181,7 @@ function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
 
     --// trace (레이가 이동한 거리 (스칼라), raycast result) 
     --// 부피계산은 레이를 velocity 의 방향에 부피 / 2 를 곱해줌
-    local distance, result = physics.traceLine(v0, v1 + (velocitySingVector * collisionSize))
+    local distance, result = physics_main_utils.traceLine(v0, v1 + (velocitySingVector * collisionSize))
 
     --// self 가 충돌하지 않음 으로 변경
     self.isColliding = false
