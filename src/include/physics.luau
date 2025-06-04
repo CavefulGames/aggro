@@ -26,9 +26,6 @@ export type Entity = {
     --// 충돌여부
     isColliding: boolean,
 
-    --// ~~꽃혀있는지 여부~~
-    isAttachToTarget: boolean,
-
     --// 프레임마다 렌더링될 파트
     render: Part?,
 
@@ -70,8 +67,6 @@ function physics.entity(): Entity
         normal = Vector3.zero,
 
         isColliding = false,
-
-        isAttachToTarget = false,
 
         die = os.clock() + 10,
 
@@ -214,9 +209,6 @@ function physics.physicsCollisionBounce(self: Entity)
     --// velocity 의 스칼라를 구함 (속도의 제곱값 (Square))
     local speedSquare = velocity:Dot(velocity)
 
-    --// 꽃혀있지 않은상태
-    self.isAttachToTarget = false
-
     --// 바닥충돌처리 (y 가 위쪽)
     if self.normal.Y > 0.7 then
         --// 충돌 각도가 0.7 을 넘는다면 (바닥이라면) velocity 적용
@@ -233,9 +225,6 @@ function physics.physicsCollisionBounce(self: Entity)
             --// 플레그 비활성화 (중력, 충돌)
             self.flags.fGravity = false
             self.flags.fCollideWorld = false
-
-            --// 꽃혀있는 상태
-            self.isAttachToTarget = true
         end
 
     --// 바닥에 충돌한게 아니라면
@@ -247,8 +236,6 @@ function physics.physicsCollisionBounce(self: Entity)
             self.velocity = Vector3.zero
             self.angularVelocity = Vector3.zero
             
-            --// 꽃혀있는 상태
-            self.isAttachToTarget = true
         --// velocity 값이 30 이상이라면
         else
             --// 수류탄 velocity 를 반사백터로 변경
