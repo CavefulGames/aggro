@@ -131,6 +131,11 @@ function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
         return self.velocity * deltaTime
     end
 
+    if self.isCollision then
+        --// 충돌중일경우 움직이지않음
+        return Vector3.zero
+    end
+
     --// 현제 엔티티의 속도
     local velocity = self.velocity
 
