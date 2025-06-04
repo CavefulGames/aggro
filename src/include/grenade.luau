@@ -66,7 +66,7 @@ end
 
 function grenade.grenadeCollision(self: Grenade, deltaTime: number)
     --// 수류탄이 현제 충돌 상태가 아니라면 반환
-    if not self.isCollision then
+    if not self.isColliding then
         return
     end
 

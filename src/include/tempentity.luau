@@ -63,7 +63,7 @@ function tempentity.frame(self: Entity, deltaTime: number)
     local localOrigin = self.cframe.Position
 
     --// 충돌 비활성화
-    self.isCollision = false
+    self.isColliding = false
 
     --// v += a * dt
     self.velocity = self.velocity + self.acceleration * deltaTime
@@ -119,7 +119,7 @@ function tempentity.frame(self: Entity, deltaTime: number)
     local dampingFactor = 1
     
     --// 충돌 활성화
-    self.isCollision = true
+    self.isColliding = true
 
     --// 중력의 영향을 받는다면
     if self.flags.fGravity or self.flags.fSlowGravity then

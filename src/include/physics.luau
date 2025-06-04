@@ -24,7 +24,7 @@ export type Entity = {
     normal: Vector3,
 
     --// 충돌여부
-    isCollision: boolean,
+    isColliding: boolean,
 
     --// ~~꽃혀있는지 여부~~
     isAttachToTarget: boolean,
@@ -69,7 +69,7 @@ function physics.entity(): Entity
 
         normal = Vector3.zero,
 
-        isCollision = false,
+        isColliding = false,
 
         isAttachToTarget = false,
 
@@ -131,7 +131,7 @@ function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
         return self.velocity * deltaTime
     end
 
-    if self.isCollision then
+    if self.isColliding then
         --// 충돌중일경우 움직이지않음
         return Vector3.zero
     end
@@ -174,7 +174,7 @@ function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
     local distance, result = physics.traceLine(v0, v1)
 
     --// self 가 충돌하지 않음 으로 변경
-    self.isCollision = false
+    self.isColliding = false
 
     --// result 가 없으면 반환
     if not result then
@@ -192,7 +192,7 @@ function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
     self.normal = result.Normal
 
     --// self 가 충돌함으로 변경
-    self.isCollision = true
+    self.isColliding = true
 
     if self.flags.fCollisionBounce then
         physics.physicsCollisionBounce(self)

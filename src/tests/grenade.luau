@@ -8,14 +8,12 @@ part.Color = Color3.new(1, 0, 0)
 
 local entity = grenade.entitiy()
 entity.cframe = CFrame.new(0, 10, 0)
-entity.velocity = Vector3.new(100, 100, 0)
+entity.velocity = Vector3.new(100, 200, 0)
 
 entity.flags.fGravity = true
 entity.flags.fCollideWorld = true
 
 entity.render = part
-
-entity.die = os.clock() + 2
 
 local RunService = game:GetService('RunService')
 
