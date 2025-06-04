@@ -39,6 +39,9 @@ export type Entity = {
 
     --// 충돌시 callback
     onCollide: (self: Entity) -> ()?,
+
+    --// 죽었을때 callback
+    onDie: (self: Entity) -> ()?,
 }
 
 local physics = {}
@@ -86,6 +89,10 @@ function physics.update(deltaTime: number)
             if entity.die < os.clock() then
                 table.remove(physics.entitys, i)
                 entity.isDie = true
+
+                if entity.onDie then
+                    entity.onDie(entity)
+                end
             end
         end
 

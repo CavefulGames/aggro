@@ -39,6 +39,10 @@ function tempentity.update(deltaTime: number)
             if entity.die < os.clock() then
                 table.remove(tempentity.entitys, i)
                 entity.isDie = true
+                
+                if entity.onDie then
+                    entity.onDie(entity)
+                end
             end
         end
         

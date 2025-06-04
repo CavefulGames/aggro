@@ -40,6 +40,10 @@ function grenade.update(deltaTime: number)
             if entity.die < os.clock() then
                 table.remove(grenade.entitys, i)
                 entity.isDie = true
+                
+                if entity.onDie then
+                    entity.onDie(entity)
+                end
             end
         end
 
