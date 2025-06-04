@@ -17,14 +17,14 @@ knife_physics.flags.fGravity = true
 knife_physics.flags.fCollideWorld = true
 knife_physics.flags.fCollisionBounce = true
 
+knife_physics.onCollide = function(self)
+	self.die = 0
+end
+
 task.wait(1)
 
 RunService.Heartbeat:Connect(function(deltaTime)
 	physics.update(deltaTime)
-	
-	if knife_physics.isColliding then
-		knife_physics.die = 0
-    end
 
     knife_part.CFrame = knife_physics.cframe
 end)
