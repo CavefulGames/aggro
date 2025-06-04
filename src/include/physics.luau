@@ -128,14 +128,14 @@ function physics.physicsAngular(self: Entity, deltaTime: number)
 end
 
 function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
-    --// 중력의 영향을 받지 않는다면 움직이지 않음
-    if not self.flags.fGravity then
-        return self.velocity * deltaTime
-    end
-
     if self.isColliding then
         --// 충돌중일경우 움직이지않음
         return Vector3.zero
+    end
+
+    --// 중력의 영향을 받지 않는다면 움직이지 않음
+    if not self.flags.fGravity then
+        return self.velocity * deltaTime
     end
 
     --// 현제 엔티티의 속도
