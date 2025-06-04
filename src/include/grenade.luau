@@ -61,6 +61,9 @@ function grenade.frame(self: Grenade, deltaTime: number)
     --// physics 에서 사용하는 world 를 수류탄 world 랑 같게
     physics.world = grenade.world
 
+    --// physics 의 fCollisionBounce 는 사용하지 않게
+    self.flags.fCollisionBounce = false
+
     --// 일반물리 적용하기
     physics.frame(self, deltaTime)
 

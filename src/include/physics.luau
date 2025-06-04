@@ -12,12 +12,15 @@ export type Entity = {
     position: Vector3, -- //위치
     angle: CFrame, --// 회전한 각도 (CFrame Angle) (rad)
 
+    collisionSize: Vector3,
+
     --// 플레그들 (앞의 f 는 flag 라는 뜻)
     flags: {
         fCollideWorld: boolean?, --// World 충돌을 받는지
         fGravity: boolean?, --// 중력의 영향을 받는지
         fCollisionBounce: boolean?, --// 충돌반사를 사용하는지
         fNaverDie: boolean?, --// 안죽는지
+        fCollisionSize: boolean?, --// entity 의 부피를 사용하는지
     },
 
     --// 레이케스트 법선백터
@@ -64,6 +67,8 @@ function physics.entity(): Entity
         cframe = CFrame.new(Vector3.zero),
         position = Vector3.zero,
         angle = CFrame.Angles(0, 0, 0),
+
+        collisionSize = Vector3.zero,
 
         flags = {},
 
@@ -172,8 +177,20 @@ end
 
 --// v0: 이전위치 v1: 현제위치
 function physics.physicsTrace(self: Entity, v0: Vector3, v1: Vector3)
-    --// trace (레이가 이동한 거리 (스칼라), raycast result)
-    local distance, result = physics.traceLine(v0, v1)
+    --// 충돌할때 entity 크기를 구함
+    local collisionSize = Vector3.zero
+
+    if self.flags.fCollisionSize then
+        --// 부피 / 2
+        collisionSize = self.collisionSize / 2
+    end
+
+    --// velocity 의 부호들을 구함
+    local velocitySingVector = vector_main_utils.vectorSing(self.velocity)
+
+    --// trace (레이가 이동한 거리 (스칼라), raycast result) 
+    --// 부피계산은 레이를 velocity 의 방향에 부피 / 2 를 곱해줌
+    local distance, result = physics.traceLine(v0, v1 + (velocitySingVector * collisionSize))
 
     --// self 가 충돌하지 않음 으로 변경
     self.isColliding = false
