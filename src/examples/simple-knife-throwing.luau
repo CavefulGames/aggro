@@ -10,7 +10,7 @@ knife_part.BrickColor = BrickColor.new('Really red')
 
 local knife_physics = physics.entity()
 knife_physics.cframe = CFrame.new(0, 10, 0)
-knife_physics.angularVelocity = Vector3.new(0, 0, -500)
+knife_physics.angularVelocity = Vector3.new(0, 0, -1000)
 knife_physics.velocity = Vector3.new(60, 200, 0)
 
 knife_physics.flags.fGravity = true
@@ -20,11 +20,10 @@ knife_physics.flags.fCollisionBounce = true
 task.wait(1)
 
 RunService.Heartbeat:Connect(function(deltaTime)
-	physics.frame(knife_physics, deltaTime)
-    
-    if knife_physics.isAttachToTarget then
-        knife_physics.flags.fGravity = false
-        knife_physics.flags.fCollideWorld = false
+	physics.update(deltaTime)
+	
+	if knife_physics.isColliding then
+		knife_physics.die = 0
     end
 
     knife_part.CFrame = knife_physics.cframe
