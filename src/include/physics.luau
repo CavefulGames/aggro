@@ -133,37 +133,39 @@ function physics.physicsAngular(self: Entity, deltaTime: number)
 end
 
 function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
+    --// if Entity is colliding then, return no move 
     if self.isColliding then
-        --// 충돌중일경우 움직이지않음
         return Vector3.zero
     end
 
-    --// 중력의 영향을 받지 않는다면 움직이지 않음
+    --// s = v * t
+    local distance = self.velocity * deltaTime
+
+    --// if not use gravity then, return distance
     if not self.flags.fGravity then
-        return self.velocity * deltaTime
+        return distance
     end
 
-    --// 현제 엔티티의 속도
+    --// a = v / t
+    --// v = a * t
     local velocity = self.velocity
 
-    --// 중력을 적용한 y 속도 (현제 y - 중력 * dt)
-    --// 등가속도 운동의 기본공식 (속도) v = v0 + at
-    --// 중력은 아래로 작용하기에 중력가속도(a)를 빼줌
-    --// 즉 현제 속도 (v0) - 중력가속도 (a) * deltaTime (t)
-    local newYVelocity = velocity.Y - physics.world.gravity * deltaTime
+    --// apply gravity to velocity
+    self.velocity = Vector3.new(
+        velocity.X,
+        velocity.Y - physics.world.gravity * deltaTime,
+        velocity.Z
+    )
 
-    --// 현제속도에 중력을 적용
-    velocity = vector_main_utils.setY(velocity, newYVelocity)
+    --// average velocity = (v0 + v1) / 2
+    --// s(distance) = v(velocity) * t(deltaTime)
+    distance = Vector3.new(
+        velocity.X,
+        (velocity.Y + self.velocity.Y) / 2,
+        velocity.Z
+    ) * deltaTime
 
-    --// 현제속도에 중력을 적용
-    self.velocity = velocity
-
-    --// 이동한 거리를 반환
-    --// y 는 평균 이동 속도에 dt 를 곱한값
-    velocity = velocity * deltaTime
-    velocity = vector_main_utils.setY(velocity, ((velocity.Y + newYVelocity) / 2) * deltaTime)
-    
-    return velocity
+    return distance
 end
 
 --// v0: 이전위치 v1: 현제위치
