@@ -1,4 +1,4 @@
-local physics = require'../include/physics'
+local physics = require'../src/include/physics'
 
 local RunService = game:GetService('RunService')
 

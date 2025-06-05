@@ -1,4 +1,4 @@
-local tempentity = require('../include/tempentity')
+local tempentity = require('../src/include/tempentity')
 
 local part = Instance.new('Part', workspace)
 part.Name = 'Grenade'

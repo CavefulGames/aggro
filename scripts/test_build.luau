@@ -23,8 +23,8 @@ local function build_source()
         source ..= `local {dirname} = Instance.new('Folder', core_script)\n`
         source ..= `{dirname}.Name = '{dirname}'\n`
 
-        for filenumber, filename in fs.readDir(`src/{dirname}/`) do
-            local file_source = fs.readFile(`src/{dirname}/` .. filename)
+        for filenumber, filename in fs.readDir(`{dirname}/`) do
+            local file_source = fs.readFile(`{dirname}/` .. filename)
             local vaible_name = `{dirname}{filenumber}`
             source ..= `local {vaible_name} = Instance.new('Script', {dirname})\n` 
             source ..= `{vaible_name}.Name = '{filename:gsub('.luau', '')}'\n` 

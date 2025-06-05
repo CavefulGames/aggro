@@ -1,6 +1,6 @@
 local RunService = game:GetService('RunService')
 
-local physics = require('../include/physics')
+local physics = require('../src/include/physics')
 local ball = physics.entity()
 
 local assets = workspace:WaitForChild('assets') :: Folder

@@ -25,11 +25,11 @@ include.Name = 'include'
 
     output ..= test_build.build()
     
-    if not fs.isDir('src/build') then
-        fs.writeDir('src/build')
+    if not fs.isDir('build') then
+        fs.writeDir('build')
     end
 
-    fs.writeFile('src/build/build.luau', output)
+    fs.writeFile('build/build.luau', output)
 end
 
-print(build_source())
+build_source()
