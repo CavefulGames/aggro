@@ -13,7 +13,10 @@ end
 local core_script = Instance.new('Script', game:GetService('ServerScriptService'))
 core_script.Name = 'aggrobuild'
 
-local include = Instance.new('Folder', core_script)
+local src = Instance.new('Folder', core_script)
+src.Name = 'src'
+
+local include = Instance.new('Folder', src)
 include.Name = 'include'
 ]]
     
