@@ -17,8 +17,9 @@ export type Entity = {
         fGravity: boolean?, --// 중력의 영향을 받는지
     },
 
-    --// 상태 (사용자가 바꿀수 없는부분)
-    isColliding: boolean, --// 충돌한 상태인지
+    --// trace
+    normal: Vector3,
+    isColliding: boolean,
 }
 
 local physics_main_utils = {}
@@ -48,6 +49,7 @@ function physics_main_utils.entity(): Entity
     
         flags = {},
 
+        normal = Vector3.zero,
         isColliding = false,
     }
 end
@@ -55,7 +57,7 @@ end
 --[=[
 	@within physics_main_utils
 	@tag Method
-	@method physicsGravity
+	@method physicsPosition
 
     Create move distance and calculate velocity with velocity
 
@@ -100,7 +102,7 @@ end
 --[=[
 	@within physics_main_utils
 	@tag Method
-	@method physicsGravity
+	@method physicsAngular
 
     Calculate the angle of rotation.
 
@@ -119,6 +121,40 @@ function physics_main_utils.physicsAngular(self: Entity, deltaTime: number)
     )
 end
 
+--[=[
+	@within physics_main_utils
+	@tag Method
+	@method physicsTrace
 
+    Calculate trace line
+]=]
+function physics_main_utils.physicsTrace(self: Entity, origin: Vector3, distance: Vector3)
+    --// entity collision size
+    local collisionSize = self.collisionSize
+
+    --// origin -> distance
+    local traceDistance = distance - origin
+
+    --// sing * collision size is calculate the volume
+    local trace = workspace:Raycast(
+        origin, 
+        traceDistance + self.velocity:Sign() * collisionSize
+    )
+
+    self.isColliding = false
+
+    --// if not colliding then, return
+    if not trace then
+        return
+    end
+
+    if traceDistance / trace.Distance == 1 then
+        return
+    end
+
+    self.isColliding = true
+
+    self.normal = trace.Normal
+end
 
 return physics_main_utils
