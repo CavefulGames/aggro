@@ -133,7 +133,7 @@ function physics.physicsAngular(self: Entity, deltaTime: number)
 end
 
 function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
-    --// if Entity is colliding then, return no move 
+    --// 형제 충돌중이라면 움직이지 않음
     if self.isColliding then
         return Vector3.zero
     end
@@ -141,7 +141,7 @@ function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
     --// s = v * t
     local distance = self.velocity * deltaTime
 
-    --// if not use gravity then, return distance
+    --// 중력을 사용하지않는다면 (v * t = s) 를 반환
     if not self.flags.fGravity then
         return distance
     end
@@ -150,15 +150,15 @@ function physics.physicsPosition(self: Entity, deltaTime: number): Vector3
     --// v = a * t
     local velocity = self.velocity
 
-    --// apply gravity to velocity
+    --// 속도에 중력 적용
     self.velocity = Vector3.new(
         velocity.X,
         velocity.Y - physics.world.gravity * deltaTime,
         velocity.Z
     )
 
-    --// average velocity = (v0 + v1) / 2
-    --// s(distance) = v(velocity) * t(deltaTime)
+    --// 평균가속도 = (v0 + v1) / 2
+    --// s(거리) = v(속도) * t(시간)
     distance = Vector3.new(
         velocity.X,
         (velocity.Y + self.velocity.Y) / 2,
